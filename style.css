@@ -697,7 +697,7 @@ html[data-cursor='light'] .cursor-ring.is-hover {
 /* ---------- downloads ---------- */
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: clamp(16px, 2vw, 28px);
   position: relative;
   z-index: 2;
@@ -721,6 +721,16 @@ html[data-cursor='light'] .cursor-ring.is-hover {
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.7s var(--ease-out);
+  z-index: 2;
+}
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(440px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.09), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+  pointer-events: none;
 }
 .card:hover {
   transform: translateY(-10px);
@@ -728,6 +738,9 @@ html[data-cursor='light'] .cursor-ring.is-hover {
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.9);
 }
 .card:hover::before { transform: scaleX(1); }
+.card:hover::after { opacity: 1; }
+.card.span-2 { grid-column: span 2; }
+.card.span-3 { grid-column: span 3; }
 .card-focus {
   background: var(--white);
   color: var(--black);
@@ -737,10 +750,32 @@ html[data-cursor='light'] .cursor-ring.is-hover {
 .card-focus .card-desc { color: #3a3a3a; }
 .card-focus .card-points li::before { background: var(--black); }
 .card-focus::before { background: var(--black); }
+.card-focus::after {
+  background: radial-gradient(440px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 0, 0, 0.07), transparent 55%);
+}
 .card-focus:hover { box-shadow: 0 44px 90px -30px rgba(255, 255, 255, 0.18); }
 .card-focus .btn-ghost { color: var(--black); border-color: rgba(0, 0, 0, 0.3); }
 .card-focus .btn-ghost::before { background: var(--black); }
 .card-focus .btn-ghost:hover { color: var(--white); border-color: var(--black); }
+.card-ide::before { background: #3b82f6; }
+.tag-new {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--black);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  vertical-align: 1px;
+  animation: tag-new-pulse 2.6s var(--ease-smooth) infinite;
+}
+.card-focus .tag-new { background: var(--black); color: var(--white); }
+@keyframes tag-new-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 0 7px rgba(255, 255, 255, 0); }
+}
 
 .card-tag {
   align-self: flex-start;
@@ -805,8 +840,12 @@ html[data-cursor='light'] .cursor-ring.is-hover {
   font-size: 12px;
   letter-spacing: 0.1em;
 }
+@media (max-width: 1240px) {
+  .cards > .card { grid-column: span 3; }
+}
 @media (max-width: 1020px) {
   .cards { grid-template-columns: 1fr; }
+  .cards > .card { grid-column: auto; }
 }
 .downloads-foot {
   margin-top: 48px;
@@ -1884,3 +1923,143 @@ width: 100%;
   .tl-item:nth-child(odd) .tl-card.reveal,
   .tl-item:nth-child(even) .tl-card.reveal { transform: translateY(40px) rotate(0deg); }
 }
+
+/* ---------- scroll progress bar ---------- */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  z-index: 990;
+  background: #ffffff;
+  transform-origin: left;
+  transform: scaleX(0);
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+/* ---------- nav scrollspy active ---------- */
+.nav-links a.active { color: var(--white); }
+.nav-links a.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- anchor offset under fixed nav ---------- */
+section[id] { scroll-margin-top: 64px; }
+
+/* ---------- heading balance ---------- */
+.section-title,
+.community-cta h3,
+.card-name { text-wrap: balance; }
+
+/* ---------- stat digits stay put while counting ---------- */
+.stat-num { font-variant-numeric: tabular-nums; }
+
+/* ---------- button shine sweep ---------- */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 45%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.75s var(--ease-out);
+  z-index: 2;
+  pointer-events: none;
+}
+.btn:hover::after { left: 135%; }
+.btn-solid::after {
+  background: linear-gradient(105deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+/* ---------- keyboard focus ---------- */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- desktop frame tilt ---------- */
+.desktop-stage { perspective: 1400px; }
+.desktop-tilt {
+  position: relative;
+  z-index: 2;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+@media (max-width: 900px) {
+  .desktop-tilt { transform: none !important; }
+}
+
+/* ---------- timeline progress fill ---------- */
+.timeline-wrap { position: relative; }
+.timeline-progress {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 1px;
+  height: 0;
+  background: var(--ink);
+  z-index: 1;
+  transition: height 0.25s linear;
+}
+@media (max-width: 760px) {
+  .timeline-progress { left: 5px; }
+}
+
+/* ---------- special thanks ---------- */
+.special-thanks {
+  position: relative;
+  z-index: 2;
+  margin-top: 26px;
+  font-size: 13px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--gray-4);
+}
+.special-thanks strong { color: var(--white); font-weight: 600; }
+.special-thanks a {
+  color: var(--white);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: opacity 0.35s var(--ease-out);
+}
+.special-thanks a:hover { opacity: 0.7; }
+
+/* ---------- community group chips ---------- */
+.community-groups {
+  position: relative;
+  z-index: 2;
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--gray-4);
+  border: 1px solid var(--gray-2);
+  border-radius: 999px;
+  padding: 11px 20px;
+  transition: color 0.4s var(--ease-out), border-color 0.4s var(--ease-out), background 0.4s var(--ease-out), transform 0.4s var(--ease-back);
+}
+.chip-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gray-4);
+  flex-shrink: 0;
+  transition: background 0.4s var(--ease-out);
+}
+.group-chip:hover {
+  color: var(--black);
+  background: var(--white);
+  border-color: var(--white);
+  transform: translateY(-3px);
+}
+.group-chip:hover .chip-dot { background: var(--black); }

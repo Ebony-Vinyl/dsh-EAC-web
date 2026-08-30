@@ -7,7 +7,7 @@
 
 var DATA = {
     repo: 'https://github.com/zouyuxuan122/Deepseek-Harness-EAC',
-    stars: 1024,
+    stars: 1421,
     starHistory: [
       { d: '08-14', s: 1 },
       { d: '08-15', s: 210 },
@@ -16,17 +16,20 @@ var DATA = {
       { d: '08-18', s: 834 },
       { d: '08-19', s: 927 },
       { d: '08-20', s: 998 },
-      { d: '08-21', s: 1024, live: true }
+      { d: '08-21', s: 1024 },
+      { d: '08-30', s: 1421, live: true }
     ],
     contributors: [
-      { login: 'zouyuxuan122', n: 35, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
-      { login: 'dtyg123', n: 25, avatar: 'https://avatars.githubusercontent.com/u/171705219?v=4' },
-      { login: 'says693', n: 9, avatar: 'https://avatars.githubusercontent.com/u/317628891?v=4' },
-      { login: 'jing-hy', n: 9, avatar: 'https://avatars.githubusercontent.com/u/281396152?v=4' },
-      { login: 'zixin947', n: 7, avatar: 'https://avatars.githubusercontent.com/u/318131693?v=4' },
+      { login: 'zouyuxuan122', n: 131, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
+      { login: 'jing-hy', n: 67, avatar: 'https://avatars.githubusercontent.com/u/281396152?v=4' },
+      { login: 'dtyg123', n: 34, avatar: 'https://avatars.githubusercontent.com/u/171705219?v=4' },
+      { login: 'says693', n: 27, avatar: 'https://avatars.githubusercontent.com/u/317628891?v=4' },
+      { login: 'lanyun077', n: 16, avatar: 'https://avatars.githubusercontent.com/u/186024291?v=4' },
+      { login: 'nishantpurohit04', n: 15, avatar: 'https://avatars.githubusercontent.com/u/116972523?v=4' },
+      { login: 'zixin947', n: 13, avatar: 'https://avatars.githubusercontent.com/u/318131693?v=4' },
+      { login: 'BAIKAI23333', n: 9, avatar: 'https://avatars.githubusercontent.com/u/196413461?v=4' },
       { login: 'jiang8297', n: 6, avatar: 'https://avatars.githubusercontent.com/u/242639667?v=4' },
-      { login: 'lanyun077', n: 2, avatar: 'https://avatars.githubusercontent.com/u/186024291?v=4' },
-      { login: 'Luoye-hb', n: 1, avatar: 'https://avatars.githubusercontent.com/u/238787898?v=4' },
+      { login: 'Luoye-hb', n: 6, avatar: 'https://avatars.githubusercontent.com/u/238787898?v=4' },
       { login: 'lbn2011', n: 1, avatar: 'https://avatars.githubusercontent.com/u/89037561?v=4' }
     ]
   };
@@ -37,13 +40,6 @@ var DATA = {
 
   function easeOutExpo(t) {
     return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-  }
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-  function easeOutBack(t) {
-    var c1 = 1.70158, c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
   function lerp(a, b, t) {
     return a + (b - a) * t;
@@ -253,7 +249,8 @@ var io = new IntersectionObserver(function (entries) {
     var ch = H - padT - padB;
 
     var pts = DATA.starHistory;
-    var niceMax = 1100;
+    var maxS = Math.max.apply(null, pts.map(function (p) { return p.s; }));
+    var niceMax = Math.max(1100, Math.ceil((maxS * 1.12) / 200) * 200);
     var SUB = 24;
 
     function px(i) { return padL + (i / (pts.length - 1)) * cw; }
@@ -384,12 +381,11 @@ var io = new IntersectionObserver(function (entries) {
       ctx.globalAlpha = labelAlpha;
       ctx.font = '12px "Space Grotesk", sans-serif';
       ctx.textAlign = 'left';
-      var lx = px(pts.length - 1) - 8;
-      var ly = py(pts[pts.length - 1].s) - 14;
       var label = String(DATA.stars) + ' ★';
       var tw = ctx.measureText(label).width + 20;
-      var cx = px(pts.length - 1);
-      var lx = Math.min(Math.max(cx - tw / 2, padL + 4), W - tw - 4);
+      var cxEnd = px(pts.length - 1);
+      var lx = Math.min(Math.max(cxEnd - tw / 2, padL + 4), W - tw - 4);
+      var ly = py(pts[pts.length - 1].s) - 14;
       ctx.fillStyle = '#0a0a0a';
       ctx.fillRect(lx, ly - 18, tw, 24);
       ctx.fillStyle = '#fff';
@@ -471,7 +467,7 @@ var io = new IntersectionObserver(function (entries) {
       '<img class="contributor-avatar" src="' + c.avatar + '" alt="' + c.login + '" loading="lazy">' +
       '<div class="contributor-meta">' +
       '<div class="contributor-name">' + c.login + '</div>' +
-      '<div class="contributor-role">' + c.n + ' commits</div>' +
+      '<div class="contributor-role">' + (c.role || (c.n + ' commits')) + '</div>' +
       '</div>';
     contribWrap.appendChild(a);
     io.observe(a);
@@ -584,8 +580,8 @@ var io = new IntersectionObserver(function (entries) {
 /* ---------------- live GitHub stats + self-growing curve ---------------- */
 (function () {
   'use strict';
-  var KEY = 'eacStarSeries_v1';
-  var KNOWN_KEY = 'eacKnownStats_v1';
+  var KEY = 'eacStarSeries_v2';
+  var KNOWN_KEY = 'eacKnownStats_v2';
 var REPO = 'zouyuxuan122/Deepseek-Harness-EAC';
   var POLL_MS = 60000;
   var API_BASE = [
@@ -601,7 +597,8 @@ var DEFAULT_SERIES = [
     { d: '08-18', s: 834 },
     { d: '08-19', s: 927 },
     { d: '08-20', s: 998 },
-    { d: '08-21', s: 1024, live: true }
+    { d: '08-21', s: 1024 },
+    { d: '08-30', s: 1421, live: true }
   ];
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -768,4 +765,119 @@ refresh(true);
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') refresh(false);
   });
+})();
+
+/* ---------------- scroll progress + scrollspy ---------------- */
+(function () {
+  'use strict';
+  var bar = document.getElementById('scrollProgress');
+  if (bar) {
+    var root = document.documentElement;
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var max = root.scrollHeight - root.clientHeight;
+        var p = max > 0 ? (window.scrollY || root.scrollTop) / max : 0;
+        bar.style.transform = 'scaleX(' + p + ')';
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  }
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  if (links.length && 'IntersectionObserver' in window) {
+    var map = {};
+    links.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) === '#') map[href.slice(1)] = a;
+    });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var a = map[entry.target.id];
+        if (!a) return;
+        links.forEach(function (l) { l.classList.remove('active'); });
+        a.classList.add('active');
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    Object.keys(map).forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) spy.observe(sec);
+    });
+  }
+})();
+
+/* ---------------- card spotlight follows cursor ---------------- */
+(function () {
+  'use strict';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover)').matches) return;
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+})();
+
+/* ---------------- desktop frame 3D tilt ---------------- */
+(function () {
+  'use strict';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover)').matches) return;
+  var stage = document.querySelector('.desktop-stage');
+  var tilt = document.querySelector('.desktop-tilt');
+  if (!stage || !tilt) return;
+
+  var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  function loop() {
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    tilt.style.transform = 'rotateY(' + cx.toFixed(3) + 'deg) rotateX(' + cy.toFixed(3) + 'deg)';
+    if (Math.abs(tx - cx) > 0.01 || Math.abs(ty - cy) > 0.01) {
+      raf = requestAnimationFrame(loop);
+    } else {
+      raf = null;
+    }
+  }
+  stage.addEventListener('mousemove', function (e) {
+    var r = stage.getBoundingClientRect();
+    tx = ((e.clientX - r.left) / r.width - 0.5) * 7;
+    ty = -((e.clientY - r.top) / r.height - 0.5) * 5;
+    if (!raf) raf = requestAnimationFrame(loop);
+  });
+  stage.addEventListener('mouseleave', function () {
+    tx = 0; ty = 0;
+    if (!raf) raf = requestAnimationFrame(loop);
+  });
+})();
+
+/* ---------------- timeline progress fill ---------------- */
+(function () {
+  'use strict';
+  var tl = document.querySelector('.timeline');
+  var fill = document.getElementById('timelineProgress');
+  if (!tl || !fill) return;
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var r = tl.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var p = (vh * 0.72 - r.top) / r.height;
+      p = Math.max(0, Math.min(1, p));
+      fill.style.height = (p * 100).toFixed(2) + '%';
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
 })();
