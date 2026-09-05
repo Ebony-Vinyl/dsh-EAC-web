@@ -6,8 +6,8 @@
   /* ---------------- data ---------------- */
 
 var DATA = {
-    repo: 'https://github.com/zouyuxuan122/Deepseek-Harness-EAC',
-    stars: 1421,
+    repo: 'https://github.com/zouyuxuan122/DSH-Desktop-EAC',
+    stars: 1537,
     starHistory: [
       { d: '08-14', s: 1 },
       { d: '08-15', s: 210 },
@@ -17,16 +17,17 @@ var DATA = {
       { d: '08-19', s: 927 },
       { d: '08-20', s: 998 },
       { d: '08-21', s: 1024 },
-      { d: '08-30', s: 1421, live: true }
+      { d: '08-30', s: 1421 },
+      { d: '09-05', s: 1537, live: true }
     ],
     contributors: [
-      { login: 'zouyuxuan122', n: 131, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
+      { login: 'zouyuxuan122', n: 156, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
       { login: 'jing-hy', n: 67, avatar: 'https://avatars.githubusercontent.com/u/281396152?v=4' },
-      { login: 'dtyg123', n: 34, avatar: 'https://avatars.githubusercontent.com/u/171705219?v=4' },
-      { login: 'says693', n: 27, avatar: 'https://avatars.githubusercontent.com/u/317628891?v=4' },
-      { login: 'lanyun077', n: 16, avatar: 'https://avatars.githubusercontent.com/u/186024291?v=4' },
+      { login: 'zixin947', n: 50, avatar: 'https://avatars.githubusercontent.com/u/318131693?v=4' },
+      { login: 'dtyg123', n: 36, avatar: 'https://avatars.githubusercontent.com/u/171705219?v=4' },
+      { login: 'says693', n: 35, avatar: 'https://avatars.githubusercontent.com/u/317628891?v=4' },
+      { login: 'lanyun077', n: 22, avatar: 'https://avatars.githubusercontent.com/u/186024291?v=4' },
       { login: 'nishantpurohit04', n: 15, avatar: 'https://avatars.githubusercontent.com/u/116972523?v=4' },
-      { login: 'zixin947', n: 13, avatar: 'https://avatars.githubusercontent.com/u/318131693?v=4' },
       { login: 'BAIKAI23333', n: 9, avatar: 'https://avatars.githubusercontent.com/u/196413461?v=4' },
       { login: 'jiang8297', n: 6, avatar: 'https://avatars.githubusercontent.com/u/242639667?v=4' },
       { login: 'Luoye-hb', n: 6, avatar: 'https://avatars.githubusercontent.com/u/238787898?v=4' },
@@ -580,9 +581,14 @@ var io = new IntersectionObserver(function (entries) {
 /* ---------------- live GitHub stats + self-growing curve ---------------- */
 (function () {
   'use strict';
-  var KEY = 'eacStarSeries_v2';
-  var KNOWN_KEY = 'eacKnownStats_v2';
-var REPO = 'zouyuxuan122/Deepseek-Harness-EAC';
+  var KEY = 'eacStarSeries_v3';
+  var KNOWN_KEY = 'eacKnownStats_v3';
+var REPO = 'zouyuxuan122/DSH-Desktop-EAC';
+  var REPO_MATRIX = {
+    desktop: 'zouyuxuan122/DSH-Desktop-EAC',
+    launcher: 'zouyuxuan122/DSH-EAC-Launcher',
+    ide: 'zouyuxuan122/Deepseek-Harness-EAC-IDE'
+  };
   var POLL_MS = 60000;
   var API_BASE = [
     'https://api.github.com',
@@ -598,7 +604,8 @@ var DEFAULT_SERIES = [
     { d: '08-19', s: 927 },
     { d: '08-20', s: 998 },
     { d: '08-21', s: 1024 },
-    { d: '08-30', s: 1421, live: true }
+    { d: '08-30', s: 1421 },
+    { d: '09-05', s: 1537, live: true }
   ];
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -758,12 +765,31 @@ function refresh(full) {
     }).catch(fail);
   }
 
+  function refreshMatrix() {
+    Object.keys(REPO_MATRIX).forEach(function (slot) {
+      fetchJson('/repos/' + REPO_MATRIX[slot]).then(function (r) {
+        return r.json();
+      }).then(function (repo) {
+        document.querySelectorAll('[data-repo-stars="' + slot + '"]').forEach(function (el) {
+          el.textContent = String(repo.stargazers_count);
+        });
+      }).catch(function () {});
+    });
+  }
+
 refresh(true);
+  refreshMatrix();
   setInterval(function () {
-    if (document.visibilityState !== 'hidden') refresh(false);
+    if (document.visibilityState !== 'hidden') {
+      refresh(false);
+      refreshMatrix();
+    }
   }, POLL_MS);
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') refresh(false);
+    if (document.visibilityState === 'visible') {
+      refresh(false);
+      refreshMatrix();
+    }
   });
 })();
 
