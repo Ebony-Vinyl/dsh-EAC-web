@@ -6,7 +6,7 @@
   /* ---------------- data ---------------- */
 
 var DATA = {
-    repo: 'https://github.com/zouyuxuan122/DSH-Desktop-EAC',
+    repo: 'https://github.com/Ebony-Vinyl/DSH-Desktop-EAC',
     stars: 1537,
     starHistory: [
       { d: '08-14', s: 1 },
@@ -21,7 +21,7 @@ var DATA = {
       { d: '09-05', s: 1537, live: true }
     ],
     contributors: [
-      { login: 'zouyuxuan122', n: 156, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
+      { login: 'Ebony-Vinyl', n: 156, avatar: 'https://avatars.githubusercontent.com/u/245557608?v=4' },
       { login: 'jing-hy', n: 67, avatar: 'https://avatars.githubusercontent.com/u/281396152?v=4' },
       { login: 'zixin947', n: 50, avatar: 'https://avatars.githubusercontent.com/u/318131693?v=4' },
       { login: 'dtyg123', n: 36, avatar: 'https://avatars.githubusercontent.com/u/171705219?v=4' },
@@ -583,11 +583,11 @@ var io = new IntersectionObserver(function (entries) {
   'use strict';
   var KEY = 'eacStarSeries_v3';
   var KNOWN_KEY = 'eacKnownStats_v3';
-var REPO = 'zouyuxuan122/DSH-Desktop-EAC';
+var REPO = 'Ebony-Vinyl/DSH-Desktop-EAC';
   var REPO_MATRIX = {
-    desktop: 'zouyuxuan122/DSH-Desktop-EAC',
-    launcher: 'zouyuxuan122/DSH-EAC-Launcher',
-    ide: 'zouyuxuan122/Deepseek-Harness-EAC-IDE'
+    desktop: 'Ebony-Vinyl/DSH-Desktop-EAC',
+    launcher: 'Ebony-Vinyl/DSH-EAC-Launcher',
+    ide: 'Ebony-Vinyl/Deepseek-Harness-EAC-IDE'
   };
   var POLL_MS = 60000;
   var API_BASE = [
